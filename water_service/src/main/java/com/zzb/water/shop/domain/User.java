@@ -1,6 +1,8 @@
-package com.zzb.water.shop.service.domain;
+package com.zzb.water.shop.domain;
 
-public class User{
+import java.io.Serializable;
+
+public class User implements Serializable{
 
     private Long id;
     private String name;

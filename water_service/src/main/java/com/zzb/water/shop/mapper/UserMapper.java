@@ -1,10 +1,13 @@
-package com.zzb.water.shop.service.mapper;
+package com.zzb.water.shop.mapper;
 
-import com.zzb.water.shop.service.domain.User;
+import com.zzb.water.shop.domain.User;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+/**
+ * @author 张志斌
+ */
 public interface UserMapper {
     /**
      * 添加用户
@@ -42,7 +45,7 @@ public interface UserMapper {
     long delete(@Param("request") User user);
 
     /**
-     * 通过用户名密码登录
+     * 通过手机号登录
      * @param user
      * @return
      */

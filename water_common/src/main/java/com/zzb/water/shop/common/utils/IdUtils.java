@@ -1,4 +1,4 @@
-package com.zzb.water.shop.core.utils;
+package com.zzb.water.shop.common.utils;
 
 /**
  * @Author by 张志斌 .
@@ -9,7 +9,7 @@ public class IdUtils {
      * Snowflake算法生成id，需要保证服务器集群的时钟相同
      * @return
      */
-    private synchronized Long getId() {
+    public static synchronized Long getId() {
         long timestamp = System.currentTimeMillis();
 
         long lastTimestamp = -1L;
@@ -32,22 +32,15 @@ public class IdUtils {
             if(sequence == 0) {
                 // 如果本毫秒内执行超过限定次数，则等待到下一毫秒继续执行，理论上不可能发生
                 while(timestamp <= lastTimestamp) {
-                    timestamp = timeGen();
+                    timestamp = System.currentTimeMillis();;
                 }
             }
         } else {
             sequence = 0L;
         }
 
-        lastTimestamp = timestamp;
-
         long seed = 1288834974657L;
         return ((timestamp - seed) << timestampLeftShift) | (dataCenterId << dataCenterIdShift) | (workerId << workerIdShift) | sequence;
     }
-
-    private long timeGen() {
-        return System.currentTimeMillis();
-    }
-
 
 }
