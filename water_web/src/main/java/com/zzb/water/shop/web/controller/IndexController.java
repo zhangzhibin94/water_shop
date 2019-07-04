@@ -24,5 +24,8 @@ public class IndexController {
         User user = new User();
         List<User> user1 = userService.findUser(user);
         return "default.html";
+
+
+
     }
 }
