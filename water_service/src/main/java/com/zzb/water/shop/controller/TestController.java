@@ -17,6 +17,7 @@ import java.util.List;
 public class TestController {
     @Autowired
     private UserService userService;
+
     @RequestMapping(value = "/test")
     @ResponseBody
     public Object test(){
@@ -24,4 +25,6 @@ public class TestController {
         List<User> user1 = userService.findUser(user);
         return user1;
     }
+
+
 }

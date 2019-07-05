@@ -4,6 +4,8 @@ import com.zzb.water.shop.domain.User;
 import com.zzb.water.shop.request.LoginByTelephoneRequest;
 import com.zzb.water.shop.response.LoginResponse;
 import com.zzb.water.shop.response.RegisterCreateResponse;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 import java.util.List;
 
@@ -13,7 +15,7 @@ import java.util.List;
  */
 
 public interface UserService {
-    void test();
+
     List<User> findUser(User user);
 
     /**
@@ -21,6 +23,7 @@ public interface UserService {
      * @param user
      * @return
      */
+
     RegisterCreateResponse register(User user);
 
     /**

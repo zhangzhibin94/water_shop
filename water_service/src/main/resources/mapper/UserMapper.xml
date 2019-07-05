@@ -7,7 +7,7 @@
     <result column="PASSWORD" jdbcType="VARCHAR" property="password"></result>
   </resultMap>
   <sql id="entityColumnList" >
-     ID,NAME,PASSWORD,EMAIL,USER_NAME,PHONE,IS_DELETED,ROW_VERSION,CREATION_TIME,LAST_UPDATE_TIME
+     ID,NAME,EMAIL,USER_NAME,PHONE,IS_DELETED,ROW_VERSION,CREATION_TIME,LAST_UPDATE_TIME
   </sql>
 
   <insert id="insert" >

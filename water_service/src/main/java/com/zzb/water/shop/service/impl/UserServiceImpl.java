@@ -1,8 +1,6 @@
 package com.zzb.water.shop.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 import com.zzb.water.shop.common.utils.IdUtils;
 import com.zzb.water.shop.config.constant.ErrorType;
 import com.zzb.water.shop.domain.User;
@@ -24,16 +22,11 @@ import java.util.List;
  */
 @Service(version = "${demo.service.version}")
 @Transactional(rollbackFor = Exception.class)
-@NacosPropertySource(dataId = "zzb_config", groupId = "common", autoRefreshed = true)
 public class UserServiceImpl implements UserService {
-    @NacosValue(value = "${spring.thymeleaf.cache}", autoRefreshed = true)
-    private String brand;
+
     @Autowired
     private UserMapper userMapper;
-    @Override
-    public void test() {
-        System.out.println(brand);
-    }
+
 
     @Autowired
     private JedisClient jedisClient;

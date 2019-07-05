@@ -1,9 +1,11 @@
 package com.zzb.water.shop.domain;
 
+import org.springframework.data.elasticsearch.annotations.Field;
+
 import java.io.Serializable;
 
 public class User implements Serializable{
-
+    @Field(searchAnalyzer = "ik_smart")
     private Long id;
     private String name;
     private String password;
