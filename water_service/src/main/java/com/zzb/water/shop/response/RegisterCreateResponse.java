@@ -3,6 +3,7 @@ package com.zzb.water.shop.response;/**
  */
 
 
+import com.zzb.water.shop.core.response.BaseResponse;
 import com.zzb.water.shop.domain.User;
 
 /**

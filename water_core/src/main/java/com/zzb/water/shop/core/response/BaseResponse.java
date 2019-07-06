@@ -1,19 +1,18 @@
-package com.zzb.water.shop.response;/**
+package com.zzb.water.shop.core.response;/**
  * Created by zzb on 2018/12/11.
  */
 
 
-
-import com.zzb.water.shop.config.constant.Error;
-import com.zzb.water.shop.config.constant.ErrorType;
+import com.zzb.water.shop.core.config.context.Error;
+import com.zzb.water.shop.core.config.context.ErrorType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author zzb
- * @create 2018-12-11 11:17
+ * @author 张志斌
+ * @create 2019-7-6 11:17
  * @desc 返回结果响应
  **/
 public class BaseResponse implements Serializable {

@@ -1,4 +1,4 @@
-package com.zzb.water.shop.config.constant;/**
+package com.zzb.water.shop.core.config.context;/**
  * Created by zzb on 2018/12/11.
  */
 

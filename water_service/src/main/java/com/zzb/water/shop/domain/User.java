@@ -1,10 +1,14 @@
 package com.zzb.water.shop.domain;
 
+import com.zzb.water.shop.core.domian.BaseDomain;
 import org.springframework.data.elasticsearch.annotations.Field;
 
-import java.io.Serializable;
-
-public class User implements Serializable{
+/**
+ * @author 张志斌
+ * @date 2019/7/6
+ * 用户
+ */
+public class User extends BaseDomain {
     @Field(searchAnalyzer = "ik_smart")
     private Long id;
     private String name;

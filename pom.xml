@@ -133,6 +133,11 @@
                         <target>${java.version}</target>
                     </configuration>
                 </plugin>
+                <!--打包时自动生成主体清单，META-INF/MANIFEST.MF会保存入口类-->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>

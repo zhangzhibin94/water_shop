@@ -2,14 +2,14 @@ package com.zzb.water.shop.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.zzb.water.shop.common.utils.IdUtils;
-import com.zzb.water.shop.config.constant.ErrorType;
+import com.zzb.water.shop.core.config.context.ErrorType;
 import com.zzb.water.shop.domain.User;
 import com.zzb.water.shop.mapper.UserMapper;
 import com.zzb.water.shop.request.LoginByTelephoneRequest;
 import com.zzb.water.shop.response.LoginResponse;
 import com.zzb.water.shop.response.RegisterCreateResponse;
 import com.zzb.water.shop.service.UserService;
-import com.zzb.water.shop.utils.JedisClient;
+import com.zzb.water.shop.utils.RedisClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Autowired
-    private JedisClient jedisClient;
+    private RedisClient redisClient;
 
 
 
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
             return response;
         }
         //获取redis中的验证码
-        String msg = jedisClient.get("register:" + user.getTelephone());
+        String msg = redisClient.get("register:" + user.getTelephone());
         LoginResponse loginResponse = this.checkCode(msg, user);
         if(loginResponse.hasError()){
             response.addErrors(loginResponse.getErrors());
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
             user.setPhone(request.getTelephone());
             user.setTelephone(request.getTelephone());
             user.setCode(request.getCode());
-            String msg = jedisClient.get("login:" + request.getTelephone());
+            String msg = redisClient.get("login:" + request.getTelephone());
             LoginResponse loginResponse = this.checkCode(msg, user);
             if(loginResponse.hasError()){
                 response.addErrors(loginResponse.getErrors());

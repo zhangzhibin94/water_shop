@@ -1,9 +1,9 @@
 package com.zzb.water.shop.domain;
 
+import com.zzb.water.shop.core.domian.BaseDomain;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -11,7 +11,7 @@ import java.util.Date;
  * @Date 16:09 2019/7/5
  */
 @Document(indexName = "commodity",type = "item")
-public class Item implements Serializable{
+public class Item extends BaseDomain {
     private Long id;
     @Field(searchAnalyzer = "ik_max_word", analyzer = "ik_max_word")
     private String title;

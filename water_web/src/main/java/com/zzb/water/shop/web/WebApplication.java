@@ -11,8 +11,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  * @Author by 张志斌 .
  * @Date 11:44 2019/7/1
  */
-@NacosPropertySource(dataId = "zzb_config", groupId = "common", autoRefreshed = true)
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
+@NacosPropertySource(dataId = "zzb_config", groupId = "common", autoRefreshed = true)
 @EnableDubbo
 public class WebApplication {
 

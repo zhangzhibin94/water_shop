@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzb.water.shop.mapper.GarbageInfoMapper" >
+  <resultMap id="baseResultMap" type="com.zzb.water.shop.domain.GarbageInfo">
+    <id column="ID" jdbcType="NUMERIC" property="id"></id>
+    <result column="NAME" jdbcType="VARCHAR" property="name"></result>
+    <result column="TYPE" jdbcType="NUMERIC" property="type"></result>
+    <result column="COLLECTION_STEP" jdbcType="VARCHAR" property="collectionStep"></result>
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"></result>
+    <result column="imageUrl" jdbcType="VARCHAR" property="imageUrl"></result>
+    <result column="DELETED" jdbcType="BOOLEAN" property="deleted"></result>
+    <result column="ROW_VERSION" jdbcType="NUMERIC" property="rowVersion"></result>
+    <result column="CREATION_TIME" jdbcType="TIMESTAMP" property="creationTime"></result>
+    <result column="LAST_UPDATE_TIME" jdbcType="TIMESTAMP" property="lastUpdateTime"></result>
+    <result column="LAST_UPDATE_BY" jdbcType="NUMERIC" property="lastUpdateBy"></result>
+  </resultMap>
+  <sql id="entityColumnList">
+     ID,NAME,TYPE,COLLECTION_STEP,DESCRIPTION,imageUrl,DELETED,ROW_VERSION,CREATION_TIME,LAST_UPDATE_TIME,LAST_UPDATE_BY
+  </sql>
+
+  <insert id="insert" >
+    INSERT INTO `GARBAGE_INFO` (
+    ID,
+    NAME,
+    TYPE,
+    COLLECTION_STEP,
+    DESCRIPTION,
+    imageUrl,
+    DELETED,
+    ROW_VERSION,
+    CREATION_TIME,
+    LAST_UPDATE_TIME,
+    LAST_UPDATE_BY
+    )
+    values (
+      #{request.id},
+      #{request.name},
+      #{request.collectionStep},
+      #{request.description},
+      #{request.imageUrl},
+      0,
+      0,
+      SYSDATE(),
+      SYSDATE(),
+      #{request.lastUpdateBy}
+    )
+  </insert>
+  <select id="find" resultMap="baseResultMap">
+    SELECT
+    <include refid="entityColumnList" />
+    FROM `GARBAGE_INFO`
+    WHERE
+    DELETED = 0
+    <if test="request.id!=null">
+      AND ID = #{request.id}
+    </if>
+    <if test="request.name != null">
+      AND NAME  LIKE CONCAT('%', #{ request.name },'%')
+    </if>
+
+  </select>
+
+
+  <update id="delete">
+    UPDATE
+    `GARBAGE_INFO`
+    SET
+    `DELETED` = 1
+    ,`LAST_UPDATE_TIME`=SYSDATE()
+    ,`ROW_VERSION` = `ROW_VERSION` + 1
+    WHERE
+    `DELETED`=0
+    AND `ID` = #{ request.id}
+    AND `ROW_VERSION` = #{ request.rowVersion}
+  </update>
+
+  <update id="update">
+    UPDATE
+    `GARBAGE_INFO`
+    SET
+    <if test="request.name != null">
+      `NAME` = #{ request.name },
+    </if>
+    <if test="request.type != null">
+      `TYPE` = #{ request.type},
+    </if>
+    <if test="request.collectionStep != null">
+      `COLLECTION_STEP` = #{ request.collectionStep },
+    </if>
+    <if test="request.name != null">
+      `DESCRIPTION` = #{ request.description },
+    </if>
+    <if test="request.imageUrl != null">
+      `imageUrl` = #{ request.imageUrl },
+    </if>
+      `LAST_UPDATED_BY`=#{ request.userId },
+      `LAST_UPDATE_TIME`=SYSDATE(),
+      `ROW_VERSION` = `ROW_VERSION` + 1
+    WHERE
+      `DELETED`=0
+      AND `ID` = #{id}
+      AND `ROW_VERSION` = #{ reuqest.rowVersion}
+  </update>
+
+</mapper>

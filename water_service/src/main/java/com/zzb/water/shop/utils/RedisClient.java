@@ -5,10 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @Author by 张志斌 .
+ * @Date 11:23 2019/7/2
+ */
 @Component
-public class JedisClient {
+public class RedisClient {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
@@ -52,6 +57,11 @@ public class JedisClient {
         return expire;
     }
 
+    public  Boolean expire(String key, long mm){
+        Boolean expire = expire(key, mm, TimeUnit.MILLISECONDS);
+        return expire;
+    }
+
     /**
      * 获得过期时间
      * @param key
@@ -69,5 +79,27 @@ public class JedisClient {
     public Long getExpire(String key,TimeUnit timeUnit){
         Long expire = redisTemplate.getExpire(key, timeUnit);
         return expire;
+    }
+
+    public Long lset(String key, String value){
+        try {
+            return redisTemplate.opsForList().leftPush(key, value);
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
+    public String lget(String key){
+        try {
+            return redisTemplate.opsForList().leftPop(key);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Boolean delete(String key){
+        return redisTemplate.delete(key);
     }
 }

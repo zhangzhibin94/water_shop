@@ -1,15 +1,11 @@
 package com.zzb.water.shop.web.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 import com.zzb.water.shop.common.utils.IdUtils;
 import com.zzb.water.shop.domain.Item;
 import com.zzb.water.shop.domain.User;
-import com.zzb.water.shop.repository.ItemRepository;
 import com.zzb.water.shop.service.ItemService;
 import com.zzb.water.shop.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
