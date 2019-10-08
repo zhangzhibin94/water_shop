@@ -9,27 +9,17 @@ import org.springframework.data.elasticsearch.annotations.Field;
  * 用户
  */
 public class User extends BaseDomain {
-    @Field(searchAnalyzer = "ik_smart")
     private Long id;
     private String name;
     private String password;
     private String email;
     private String userName;
     private Long phone;
-    /**
-     * 用户注册用的手机
-     */
-    private Long telephone;
 
-    /**
-     * 验证码
-     */
-    private String code;
 
-    /**
-     * 登录类型
-     */
-    private String loginType;
+
+
+
 
     public Long getId() {
         return id;
@@ -79,27 +69,5 @@ public class User extends BaseDomain {
         this.phone = phone;
     }
 
-    public String getCode() {
-        return code;
-    }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Long getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(Long telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getLoginType() {
-        return loginType;
-    }
-
-    public void setLoginType(String loginType) {
-        this.loginType = loginType;
-    }
 }

@@ -18,7 +18,7 @@ public class Item extends BaseDomain {
     @Field(searchAnalyzer = "ik_max_word", analyzer = "ik_max_word")
     private String description;
     private String summary;
-    private Date createtime;
+    private Date createTime;
     private String imageUrl;
 
     public Long getId() {
@@ -53,12 +53,12 @@ public class Item extends BaseDomain {
         this.summary = summary;
     }
 
-    public Date getCreatetime() {
-        return createtime;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public String getImageUrl() {

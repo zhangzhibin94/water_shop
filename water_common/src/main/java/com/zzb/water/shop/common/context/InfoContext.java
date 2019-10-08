@@ -12,5 +12,10 @@ public class InfoContext {
     public final static int PER_HOUR_MINUTES = 60;
     public final static int PER_DAY_HOURS = 24;
 
+    /**
+     * 数字1
+     */
+    public final static int NUMBER_ONE = 1;
+
 
 }

@@ -1,24 +1,49 @@
-package com.zzb.water.shop.response;/**
- * Created by zzb on 2018/12/11.
- */
-
+package com.zzb.water.shop.response;
 
 import com.zzb.water.shop.core.response.BaseResponse;
-import com.zzb.water.shop.domain.User;
 
 /**
- * @author zzb
- * @create 2018-12-11 11:23
- * @desc 用户登录响应
- **/
+ * @Author by 张志斌 .
+ * @Date 14:15 2019/7/23
+ */
 public class LoginResponse extends BaseResponse {
-    private User user;
 
-    public User getUser() {
-        return user;
+    /**
+     * 类型
+     */
+    private String type = "account";
+    /**
+     * 登录用户名
+     */
+    private String currentAuthority;
+
+    /**
+     * 提示信息
+     */
+    private String message;
+
+
+    public String getType() {
+        return type;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCurrentAuthority() {
+        return currentAuthority;
+    }
+
+    public void setCurrentAuthority(String currentAuthority) {
+        this.currentAuthority = currentAuthority;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

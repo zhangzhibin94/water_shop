@@ -21,6 +21,15 @@ public class BaseResponse implements Serializable {
      * 错误列表
      */
     private List<Error> errors;
+    private String status = "ok";
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     /**
      * @param code 错误码

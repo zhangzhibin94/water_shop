@@ -1,13 +1,12 @@
-package com.zzb.water.shop.request;/**
- * Created by zzb on 2018/12/12.
- */
+package com.zzb.water.shop.request;
+import com.zzb.water.shop.core.request.BaseRequest;
 
 /**
  * @author zzb
  * @create 2018-12-12 11:46
  * @desc 通过手机号、验证码登录request
  **/
-public class LoginByTelephoneRequest extends BaseRequest{
+public class LoginByTelephoneRequest extends BaseRequest {
     /**
      * 手机号
      */

@@ -10,6 +10,10 @@ import java.io.UnsupportedEncodingException;
 public class Md5Utils {
 
     private static final int HEX_VALUE_COUNT = 16;
+    /**
+     * 前加盐
+     */
+    private static final String PRE_FIX = "#ag4sfa223*N5q23!#";
 
     public static String getMD5(byte[] bytes) {
         char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -39,5 +43,14 @@ public class Md5Utils {
         }
 
         return result;
+    }
+
+    /**
+     * 加盐方式对数据进行md5加密
+     * @param value
+     * @return
+     */
+    public static String encryption(String value){
+        return getMD5(PRE_FIX + value, "utf-8");
     }
 }

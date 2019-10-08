@@ -1,5 +1,7 @@
 package com.zzb.water.shop.request;
 
+import com.zzb.water.shop.core.request.BaseRequest;
+
 import java.util.Date;
 
 public class ArticleFindRequest extends BaseRequest{

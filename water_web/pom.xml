@@ -33,6 +33,12 @@
             <artifactId>water_service</artifactId>
             <version>${water.service}</version>
         </dependency>
+        <!-- import spring security -->
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>-->
+
     </dependencies>
 
     <build>

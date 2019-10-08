@@ -17,46 +17,46 @@ import java.util.List;
 @RequestMapping(value = "/water/shop/garbage")
 public class GarbageController {
 
-    @Reference(version = "${demo.service.version}")
+    /*@Reference(version = "${demo.service.version}")
     private GarbageService garbageService;
 
-    /**
+    *//**
      * 添加垃圾
      * @param garbageInfo
      * @return
-     */
+     *//*
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
     public Integer insert(GarbageInfo garbageInfo){
         return garbageService.insert(garbageInfo);
     }
 
-    /**
+    *//**
      * 根据名称查询垃圾
      * @param name
      * @return
-     */
+     *//*
     @RequestMapping(value = "/findByName", method = RequestMethod.POST)
     public List<GarbageInfo> findByName(String name){
         return garbageService.findGarbage(name);
     }
 
-    /**
+    *//**
      * 更新垃圾
      * @param garbageInfo
      * @return
-     */
+     *//*
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public Integer update(GarbageInfo garbageInfo){
         return garbageService.update(garbageInfo);
     }
 
-    /**
+    *//**
      * 删除垃圾
      * @param garbageInfo
      * @return
-     */
+     *//*
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public Integer delete(GarbageInfo garbageInfo){
         return garbageService.delete(garbageInfo);
-    }
+    }*/
 }
