@@ -54,8 +54,8 @@
     FROM `USER`
     WHERE
     IS_DELETED = 0
-    <if test="request.username!=null">
-      AND USER_NAME = #{request.username}
+    <if test="request.userName!=null">
+      AND USER_NAME = #{request.userName}
     </if>
     <if test="request.password!=null">
       AND PASSWORD = #{request.password}

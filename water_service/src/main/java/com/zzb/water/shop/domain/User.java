@@ -16,11 +16,6 @@ public class User extends BaseDomain {
     private String userName;
     private Long phone;
 
-
-
-
-
-
     public Long getId() {
         return id;
     }

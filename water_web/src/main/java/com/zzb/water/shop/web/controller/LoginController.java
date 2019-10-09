@@ -1,6 +1,7 @@
 package com.zzb.water.shop.web.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.zzb.water.shop.core.response.BaseResponse;
 import com.zzb.water.shop.domain.User;
 import com.zzb.water.shop.request.LoginByTelephoneRequest;
 import com.zzb.water.shop.response.LoginCheckResponse;
@@ -18,8 +19,8 @@ import javax.servlet.http.HttpServletRequest;
  * @Author by 张志斌 .
  * @Date 16:35 2019/7/1
  */
-@Controller
-/*@RequestMapping("/api/login")*/
+@RestController
+@RequestMapping("/api/login")
 public class LoginController {
     @Reference(version = "${demo.service.version}")
     private UserService userService;
@@ -39,24 +40,19 @@ public class LoginController {
             response.setCurrentAuthority(user.getUserName());
             return response;
         }
-
-        return userService.login(request);
+        LoginResponse loginResponse = userService.login(request);
+        return loginResponse;
 
     }
 
     /**
-     * 配置url通配符，拦截多个地址
+     * 发送短信
+     * @param telephone
      * @return
      */
-    @RequestMapping(value = {
-            "/",
-            "/user",
-            "/user/**",
-            "/console",
-            "/console/**"
-    })
-    public String fowardIndex() {
-        return "index";
+    @GetMapping("/captcha")
+    public BaseResponse sendMessage(String telephone){
+        return userService.sendMessage(telephone);
     }
 
 }

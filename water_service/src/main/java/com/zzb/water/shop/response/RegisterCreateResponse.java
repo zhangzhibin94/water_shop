@@ -13,6 +13,7 @@ import com.zzb.water.shop.domain.User;
  **/
 public class RegisterCreateResponse extends BaseResponse {
     private User user;
+    private String currentAuthority = "user";
 
     public User getUser() {
         return user;
@@ -20,5 +21,13 @@ public class RegisterCreateResponse extends BaseResponse {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getCurrentAuthority() {
+        return currentAuthority;
+    }
+
+    public void setCurrentAuthority(String currentAuthority) {
+        this.currentAuthority = currentAuthority;
     }
 }

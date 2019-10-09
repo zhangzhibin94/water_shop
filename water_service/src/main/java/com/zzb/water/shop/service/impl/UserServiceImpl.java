@@ -2,69 +2,82 @@ package com.zzb.water.shop.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.aliyuncs.exceptions.ClientException;
 import com.zzb.water.shop.common.context.PromptMessage;
 import com.zzb.water.shop.common.utils.IdUtils;
 import com.zzb.water.shop.common.utils.Md5Utils;
 import com.zzb.water.shop.config.constant.CommonConstant;
 import com.zzb.water.shop.config.constant.RedisKeyConstant;
+import com.zzb.water.shop.core.config.context.CoreConstant;
 import com.zzb.water.shop.core.config.context.ErrorMsg;
 import com.zzb.water.shop.core.config.context.ErrorType;
+import com.zzb.water.shop.core.response.BaseResponse;
+import com.zzb.water.shop.core.utils.MessageUtil;
 import com.zzb.water.shop.domain.User;
 import com.zzb.water.shop.mapper.UserMapper;
 import com.zzb.water.shop.request.LoginByTelephoneRequest;
 import com.zzb.water.shop.request.LoginRequest;
+import com.zzb.water.shop.request.RegisterRequest;
 import com.zzb.water.shop.response.LoginCheckResponse;
 import com.zzb.water.shop.response.LoginResponse;
 import com.zzb.water.shop.response.RegisterCreateResponse;
 import com.zzb.water.shop.service.UserService;
 import com.zzb.water.shop.utils.RedisClient;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 
 import java.util.concurrent.TimeUnit;
 
 /**
+ * @Author zzb
  * 用户服务
  */
 @Service(version = "${demo.service.version}")
 @Transactional(rollbackFor = Exception.class)
 public class UserServiceImpl implements UserService {
-
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private UserMapper userMapper;
-
 
     @Autowired
     private RedisClient redisClient;
 
+    @Autowired
+    private MessageUtil messageUtil;
+
     /**
      * 用户注册
-     * @param user
+     * @param request
      * @return
      */
     @Override
-    public RegisterCreateResponse register(User user, String code) {
-
+    public RegisterCreateResponse register(RegisterRequest request) {
         RegisterCreateResponse response = new RegisterCreateResponse();
-        if(StringUtils.isNotEmpty(user.getUserName())){
-            response.addError(ErrorType.BUSINESS_ERROR,"用户名不能为空");
+        if(StringUtils.isEmpty(request.getCaptcha()) || StringUtils.isEmpty(request.getMobile())
+                || StringUtils.isEmpty(request.getPassword())){
+            response.addError(CoreConstant.ERROR, CoreConstant.PARAM_ERROR);
             return response;
         }
+        if(StringUtils.isEmpty(request.getUserName())){
+            request.setUserName(request.getMobile());
+        }
         //获取redis中的验证码
-        LoginCheckResponse loginCheckResponse = this.checkCode(user, code);
+        User user = new User();
+        BeanUtils.copyProperties(request, user);
+        user.setEmail(request.getMail());
+        user.setPhone(Long.parseLong(request.getMobile()));
+        //校验验证码
+        LoginCheckResponse loginCheckResponse = this.checkCode(user, request.getCaptcha());
         if(loginCheckResponse.hasError()){
-            response.addErrors(loginCheckResponse.getErrors());
+            response.addErrors(CoreConstant.ERROR, loginCheckResponse.getErrors());
             return response;
         }
         //密码进行md5加密
-        if(StringUtils.isNotEmpty(user.getPassword())){
-            user.setPassword(Md5Utils.encryption(user.getPassword()));
-        }else {
-            response.addError(ErrorType.BUSINESS_ERROR,"密码不能为空，请检查");
-            return response;
-        }
+        user.setPassword(Md5Utils.encryption(user.getPassword()));
         user.setId(IdUtils.getId());
         long insert = userMapper.insert(user);
         if(insert>0){
@@ -115,10 +128,10 @@ public class UserServiceImpl implements UserService {
         user.setPhone(request.getTelephone());
         LoginCheckResponse loginCheckResponse = this.checkCode(user, request.getCode());
         if(loginCheckResponse.hasError()){
-            response.addErrors(loginCheckResponse.getErrors());
+            response.addErrors(CoreConstant.ERROR, loginCheckResponse.getErrors());
             return response;
         }
-        //校验通过手机号和验证码通过
+        //校验通过手机号和验证码通过h
         //根据手机号查询用户信息
         User loginUser = userMapper.loginByTelephone(user);
         response.setUser(loginUser);
@@ -152,6 +165,26 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public BaseResponse sendMessage(String telephone) {
+        BaseResponse baseResponse = new BaseResponse();
+        try {
+            String msg = messageUtil.sendMessage(telephone);
+            //将验证码md5加密
+            String md5Message = DigestUtils.md5DigestAsHex(msg.getBytes());
+            //3.在redis中生成一条记录，key为前缀+手机号，value为验证码
+            String key = String.format(RedisKeyConstant.WATER_SHOP_CHECK_CAPTCHA_MOBILE, telephone);
+            redisClient.set(key, md5Message);
+            //todo 4.设置key的过期时间为15分钟,开发时设置为一小时
+            redisClient.expire(key,60, TimeUnit.MINUTES);
+            baseResponse.setStatus(StringUtils.isNotEmpty(msg) ? CoreConstant.OK : CoreConstant.ERROR);
+        } catch (ClientException e) {
+            LOGGER.error("发送短信失败："+e.getErrMsg());
+            e.printStackTrace();
+        }
+        return baseResponse;
+    }
+
     /**
      * 登录认证
      * @param request
@@ -160,6 +193,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse login(LoginRequest request) {
         LoginResponse response = new LoginResponse();
+        response.setType(request.getType());
         User user = new User();
         BeanUtils.copyProperties(request, user);
         //登录类型为账号密码
@@ -188,7 +222,6 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-
     /**
      * 校验验证码
      * @param code 验证码
@@ -216,11 +249,11 @@ public class UserServiceImpl implements UserService {
                     return response;
                 }
             }else {
-                response.addError(ErrorType.BUSINESS_ERROR,"请输入验证码");
+                response.addError(CoreConstant.ERROR,"请输入验证码");
                 return response;
             }
         }else {
-            response.addError(ErrorType.BUSINESS_ERROR,"抱歉，注册失败，请重新注册");
+            response.addError(CoreConstant.ERROR,"抱歉，验证码校验失败");
             return response;
         }
         return response;

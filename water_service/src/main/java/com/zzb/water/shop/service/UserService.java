@@ -1,8 +1,10 @@
 package com.zzb.water.shop.service;
 
+import com.zzb.water.shop.core.response.BaseResponse;
 import com.zzb.water.shop.domain.User;
 import com.zzb.water.shop.request.LoginByTelephoneRequest;
 import com.zzb.water.shop.request.LoginRequest;
+import com.zzb.water.shop.request.RegisterRequest;
 import com.zzb.water.shop.response.LoginCheckResponse;
 import com.zzb.water.shop.response.LoginResponse;
 import com.zzb.water.shop.response.RegisterCreateResponse;
@@ -27,12 +29,11 @@ public interface UserService {
 
     /**
      * 用户注册
-     * @param user 用户
-     * @param code 验证码
+     * @param request 请求体
      * @return
      */
 
-    RegisterCreateResponse register(User user, String code);
+    RegisterCreateResponse register(RegisterRequest request);
 
     /**
      * 通过用户名密码登录
@@ -62,5 +63,10 @@ public interface UserService {
      */
     User getUserStrByToken(String token);
 
-
+    /**
+     * 发送短信
+     * @param telephone 手机号
+     * @return
+     */
+    BaseResponse sendMessage(String telephone);
 }

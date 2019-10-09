@@ -3,6 +3,7 @@ package com.zzb.water.shop.core.response;/**
  */
 
 
+import com.zzb.water.shop.core.config.context.CoreConstant;
 import com.zzb.water.shop.core.config.context.Error;
 import com.zzb.water.shop.core.config.context.ErrorType;
 
@@ -36,6 +37,7 @@ public class BaseResponse implements Serializable {
      * @param message 错误描述
      */
     public void addError(String code, String message){
+        this.status = code;
         Error error = new Error(code,message);
         try {
             StackTraceElement ste = new Throwable().getStackTrace()[1];
@@ -46,6 +48,8 @@ public class BaseResponse implements Serializable {
         }
         _getErrors().add(error);
     }
+
+
 
     /**
      * @param type 错误类型
@@ -75,6 +79,11 @@ public class BaseResponse implements Serializable {
         for(Error error : errors){
             addError(error);
         }
+    }
+
+    public void addErrors(String code, List<Error> errors){
+        this.setStatus(code);
+        addErrors(errors);
     }
 
     /**
