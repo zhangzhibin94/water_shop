@@ -20,6 +20,10 @@ public class RedisKeyConstant {
     public static final String WATER_SHOP_CHECK_CAPTCHA_MOBILE = "water:shop:check:captcha:mobile:%s";
 
     /**
+     * 用户
+     */
+    public static final String WATER_SHOP_USER_MOBILE = "water:shop:user:%s";
+    /**
      * 私有化构造方法，不允许通过new等形式创建该类，只能通过类名.方法名
      */
     private RedisKeyConstant(){

@@ -2,10 +2,10 @@ package com.zzb.water.shop.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
-import com.aliyuncs.exceptions.ClientException;
 import com.zzb.water.shop.common.context.PromptMessage;
 import com.zzb.water.shop.common.utils.IdUtils;
 import com.zzb.water.shop.common.utils.Md5Utils;
+import com.zzb.water.shop.common.utils.UuidUtils;
 import com.zzb.water.shop.config.constant.CommonConstant;
 import com.zzb.water.shop.config.constant.RedisKeyConstant;
 import com.zzb.water.shop.core.config.context.CoreConstant;
@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.DigestUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -65,12 +64,11 @@ public class UserServiceImpl implements UserService {
         if(StringUtils.isEmpty(request.getUserName())){
             request.setUserName(request.getMobile());
         }
-        //获取redis中的验证码
         User user = new User();
         BeanUtils.copyProperties(request, user);
         user.setEmail(request.getMail());
         user.setPhone(Long.parseLong(request.getMobile()));
-        //校验验证码
+        //获取redis中的验证码并校验验证码
         LoginCheckResponse loginCheckResponse = this.checkCode(user, request.getCaptcha());
         if(loginCheckResponse.hasError()){
             response.addErrors(CoreConstant.ERROR, loginCheckResponse.getErrors());
@@ -79,15 +77,45 @@ public class UserServiceImpl implements UserService {
         //密码进行md5加密
         user.setPassword(Md5Utils.encryption(user.getPassword()));
         user.setId(IdUtils.getId());
+        if(checkRepeatUser(request.getMobile())){
+            response.addError(CoreConstant.ERROR, CoreConstant.REPEAT + ":"+request.getMobile());
+            return response;
+        }
         long insert = userMapper.insert(user);
         if(insert>0){
             response.setUser(user);
+            flushUserToRedis(user);
         }else {
             response.addError(ErrorType.BUSINESS_ERROR,"插入失败，请刷新页面后重试");
             return response;
         }
         return response;
     }
+
+    private void flushUserToRedis(User user) {
+        String key = String.format(RedisKeyConstant.WATER_SHOP_USER_MOBILE, user.getPhone().toString());
+        redisClient.set(key, JSON.toJSONString(user));
+        redisClient.expire(key, CoreConstant.THIRTY, TimeUnit.DAYS);
+    }
+
+    /**
+     * 是否存在重复的用户
+     * @param mobile
+     * @return true:存在重复的用户 false：不存在重复的用户
+     */
+    private boolean checkRepeatUser(String mobile) {
+        if(StringUtils.isEmpty(mobile)){
+            return false;
+        }
+        String key = String.format(RedisKeyConstant.WATER_SHOP_USER_MOBILE, mobile);
+        String value = redisClient.get(key);
+        if(StringUtils.isNotEmpty(value)){
+            return true;
+        }
+        User byTelephone = findByTelephone(mobile);
+        return byTelephone != null;
+    }
+
     /**
      * 通过用户名密码登录
      * @param user
@@ -120,9 +148,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginCheckResponse loginByTelephone(LoginByTelephoneRequest request) {
         LoginCheckResponse response = new LoginCheckResponse();
+
         if(request.getTelephone() == null || StringUtils.isEmpty(request.getCode())){
             response.addError(ErrorType.BUSINESS_ERROR, ErrorMsg.PARAM_ERROR);
             return response;
+        }
+        if(this.findByTelephone(request.getTelephone().toString()) == null){
+
         }
         User user = new User();
         user.setPhone(request.getTelephone());
@@ -131,11 +163,10 @@ public class UserServiceImpl implements UserService {
             response.addErrors(CoreConstant.ERROR, loginCheckResponse.getErrors());
             return response;
         }
-        //校验通过手机号和验证码通过h
+        //校验通过手机号和验证码通过
         //根据手机号查询用户信息
-        User loginUser = userMapper.loginByTelephone(user);
+        User loginUser = findByTelephone(request.getTelephone().toString());
         response.setUser(loginUser);
-
         return response;
     }
 
@@ -157,7 +188,7 @@ public class UserServiceImpl implements UserService {
             //若redis同样存在该记录，说明此用户已经登录
             if(StringUtils.isNotEmpty(userStr)){
                 //刷新redis中的key的过期时间
-                redisClient.expire("user:sso:" + token,30, TimeUnit.MINUTES);
+                redisClient.expire(key,30, TimeUnit.MINUTES);
                 //将此json串转为user对象
                return JSON.parseObject(userStr, User.class);
             }
@@ -168,18 +199,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseResponse sendMessage(String telephone) {
         BaseResponse baseResponse = new BaseResponse();
+        if(StringUtils.isEmpty(telephone)){
+            baseResponse.addError(ErrorType.BUSINESS_ERROR, ErrorMsg.PARAM_ERROR);
+            return baseResponse;
+        }
         try {
-            String msg = messageUtil.sendMessage(telephone);
+//            String msg = messageUtil.sendMessage(telephone);
+            String msg = "12345";
             //将验证码md5加密
-            String md5Message = DigestUtils.md5DigestAsHex(msg.getBytes());
+            String md5Message = Md5Utils.encryption(msg);
             //3.在redis中生成一条记录，key为前缀+手机号，value为验证码
             String key = String.format(RedisKeyConstant.WATER_SHOP_CHECK_CAPTCHA_MOBILE, telephone);
             redisClient.set(key, md5Message);
             //todo 4.设置key的过期时间为15分钟,开发时设置为一小时
             redisClient.expire(key,60, TimeUnit.MINUTES);
             baseResponse.setStatus(StringUtils.isNotEmpty(msg) ? CoreConstant.OK : CoreConstant.ERROR);
-        } catch (ClientException e) {
-            LOGGER.error("发送短信失败："+e.getErrMsg());
+        } catch (Exception e) {
+            LOGGER.error("发送短信失败："+e.getMessage());
             e.printStackTrace();
         }
         return baseResponse;
@@ -201,6 +237,7 @@ public class UserServiceImpl implements UserService {
             LoginCheckResponse loginCheckResponse = loginByUserName(user);
             //账号密码登录成功
             if(!loginCheckResponse.hasError() && loginCheckResponse.getUser() != null){
+                response.setToken(setToken(user));
                 response.setCurrentAuthority(user.getUserName());
                 return response;
             }
@@ -212,7 +249,8 @@ public class UserServiceImpl implements UserService {
             telephoneRequest.setCode(request.getCaptcha());
             //手机号 验证码登录
             LoginCheckResponse loginCheckResponse = loginByTelephone(telephoneRequest);
-            if(loginCheckResponse.hasError() && loginCheckResponse.getStatus().equals(PromptMessage.OK)){
+            if(!loginCheckResponse.hasError() && loginCheckResponse.getStatus().equals(PromptMessage.OK)){
+                response.setToken(setToken(user));
                 response.setCurrentAuthority(user.getUserName());
                 return response;
             }
@@ -242,7 +280,8 @@ public class UserServiceImpl implements UserService {
         if(StringUtils.isNotEmpty(captcha)){
             if(StringUtils.isNotEmpty(code)){
                 //将用户的验证码加密后与redis中的加密验证码进行匹配，匹配成功，则在数据库中插入用户信息
-                if(captcha.equalsIgnoreCase(Md5Utils.encryption(code))){
+                String encryption = Md5Utils.encryption(code);
+                if(captcha.equalsIgnoreCase(encryption)){
                     response.setUser(user);
                 }else {//匹配失败
                     response.addError(ErrorType.BUSINESS_ERROR,"您输入的验证码错误，请检查");
@@ -257,5 +296,35 @@ public class UserServiceImpl implements UserService {
             return response;
         }
         return response;
+    }
+
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public User findByTelephone(String mobile){
+        if(StringUtils.isEmpty(mobile)){
+            return null;
+        }
+        String key = String.format(RedisKeyConstant.WATER_SHOP_USER_MOBILE, mobile);
+        String value = redisClient.get(key);
+        if(StringUtils.isNotEmpty(value)){
+            return JSON.parseObject(value, User.class);
+        }
+        User user = new User();
+        user.setPhone(Long.parseLong(mobile));
+        User userByTelephone = userMapper.findByTelephone(user);
+        //刷新到redis
+        flushUserToRedis(userByTelephone);
+        return user;
+    }
+
+    /**
+     * 设置token
+     * @param user
+     */
+    public String setToken(User user){
+        String token = UuidUtils.generateUuid();
+        String key = String.format(RedisKeyConstant.WATER_SHOP_WEB_LOGIN, token);
+        redisClient.set(key, JSON.toJSONString(user));
+        redisClient.expire(key, CoreConstant.THIRTY, TimeUnit.MINUTES);
+        return token;
     }
 }

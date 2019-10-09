@@ -49,5 +49,6 @@ public interface UserMapper {
      * @param user
      * @return
      */
-    User loginByTelephone(@Param("request") User user);
+    User findByTelephone(@Param("request") User user);
+
 }

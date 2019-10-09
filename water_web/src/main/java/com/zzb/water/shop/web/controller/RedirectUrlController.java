@@ -20,7 +20,7 @@ public class RedirectUrlController {
             "/console",
             "/console/**"
     })
-    public String fowardIndex() {
+    public String forwardIndex() {
         return "index";
     }
 }

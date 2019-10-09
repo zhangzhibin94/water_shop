@@ -22,6 +22,11 @@ public class LoginResponse extends BaseResponse {
      */
     private String message;
 
+    /**
+     * token
+     */
+    private String token;
+
 
     public String getType() {
         return type;
@@ -45,5 +50,13 @@ public class LoginResponse extends BaseResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

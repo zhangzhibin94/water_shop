@@ -80,7 +80,7 @@
     AND `TENANT_ID`=#{ request.tenantId }
     AND `ID` = #{id}
   </update>
-  <select id="loginByTelephone" resultMap="baseResultMap">
+  <select id="findByTelephone" resultMap="baseResultMap">
     SELECT
     <include refid="entityColumnList" />
     FROM `USER`
@@ -90,4 +90,5 @@
       AND PHONE = #{request.phone}
     </if>
   </select>
+
 </mapper>
