@@ -13,6 +13,7 @@ public class CoreConstant {
 
     public final static String REPEAT = "该数据已存在";
 
+    public final static String NOT_EXIST = "数据不存在";
     /**
      * 长整型30
      */

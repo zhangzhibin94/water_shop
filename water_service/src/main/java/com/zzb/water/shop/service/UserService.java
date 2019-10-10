@@ -8,6 +8,7 @@ import com.zzb.water.shop.request.RegisterRequest;
 import com.zzb.water.shop.response.LoginCheckResponse;
 import com.zzb.water.shop.response.LoginResponse;
 import com.zzb.water.shop.response.RegisterCreateResponse;
+import com.zzb.water.shop.response.UserGetResponse;
 
 import java.util.List;
 
@@ -69,4 +70,11 @@ public interface UserService {
      * @return
      */
     BaseResponse sendMessage(String telephone);
+
+    /**
+     * 根据token获取
+     * @param token
+     * @return
+     */
+    UserGetResponse getUser(String token);
 }

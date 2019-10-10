@@ -21,6 +21,7 @@ import com.zzb.water.shop.request.RegisterRequest;
 import com.zzb.water.shop.response.LoginCheckResponse;
 import com.zzb.water.shop.response.LoginResponse;
 import com.zzb.water.shop.response.RegisterCreateResponse;
+import com.zzb.water.shop.response.UserGetResponse;
 import com.zzb.water.shop.service.UserService;
 import com.zzb.water.shop.utils.RedisClient;
 import org.apache.commons.lang3.StringUtils;
@@ -221,6 +222,21 @@ public class UserServiceImpl implements UserService {
         return baseResponse;
     }
 
+    @Override
+    public UserGetResponse getUser(String token) {
+        UserGetResponse response = new UserGetResponse();
+        User user = this.getUserStrByToken(token);
+        if(user == null){
+            response.addError(CoreConstant.ERROR, CoreConstant.NOT_EXIST);
+            return response;
+        }
+        BeanUtils.copyProperties(user, response);
+        response.setEmail(user.getEmail());
+        response.setName(user.getUserName());
+        response.setUserid(user.getId());
+        return response;
+    }
+
     /**
      * 登录认证
      * @param request
@@ -250,7 +266,7 @@ public class UserServiceImpl implements UserService {
             //手机号 验证码登录
             LoginCheckResponse loginCheckResponse = loginByTelephone(telephoneRequest);
             if(!loginCheckResponse.hasError() && loginCheckResponse.getStatus().equals(PromptMessage.OK)){
-                response.setToken(setToken(user));
+                response.setToken(setToken(loginCheckResponse.getUser()));
                 response.setCurrentAuthority(user.getUserName());
                 return response;
             }
@@ -311,6 +327,9 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setPhone(Long.parseLong(mobile));
         User userByTelephone = userMapper.findByTelephone(user);
+        if(userByTelephone == null){
+            return null;
+        }
         //刷新到redis
         flushUserToRedis(userByTelephone);
         return user;

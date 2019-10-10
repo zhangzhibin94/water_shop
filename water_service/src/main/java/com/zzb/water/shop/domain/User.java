@@ -1,5 +1,7 @@
 package com.zzb.water.shop.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.zzb.water.shop.core.domian.BaseDomain;
 import org.springframework.data.elasticsearch.annotations.Field;
 
@@ -9,6 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
  * 用户
  */
 public class User extends BaseDomain {
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
     private String name;
     private String password;
