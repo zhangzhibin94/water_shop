@@ -27,16 +27,28 @@ public class LoginInterceptor implements HandlerInterceptor {
     @NacosValue(value = "${domainName}", autoRefreshed = true)
     private String domainName;
     /**
+     * 不需要过滤的请求集合
+     */
+    @NacosValue(value = "${filter.url.list}", autoRefreshed = true)
+    private String filterUrlList;
+    /**
      * 进入controller层之前拦截请求
-     * sso拦截说明：redis中key为uuid生成的32为token，格式为user:sso:token,
+     * sso拦截说明：redis中key为uuid生成的32为token
      * value为user对象的json字符串
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if(true){
-            return true;
-        }
         System.out.println("sso interceptor init");
+        //跳过所有不需要经过检查的路径
+        if(StringUtils.isNotEmpty(filterUrlList)){
+            String[] filterUrls = this.filterUrlList.split(",");
+            for(String url : filterUrls){
+                if(request.getRequestURI().contains(url)){
+                    return true;
+                }
+            }
+        }
+
         //从拦截器中获取cookie的信息
         String token = CookieUtils.getCookieValue(request,"token");
         //如果cookie存在token，则取redis中查看是否存在与之匹配的记录
@@ -59,13 +71,11 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        System.out.println("postHandle");
         HandlerInterceptor.super.postHandle(request, response,handler,modelAndView);
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        System.out.println("afterCompletion()");
         HandlerInterceptor.super.afterCompletion(request, response,handler,ex);
     }
 
