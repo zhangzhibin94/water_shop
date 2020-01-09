@@ -4,5 +4,6 @@
 /water_shop.iml
 /watershop.iml
 /.gitignore
+*.iml
 /water_web/water_web.iml
 /water_service/water_service.iml

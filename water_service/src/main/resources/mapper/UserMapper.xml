@@ -7,11 +7,11 @@
     <result column="PASSWORD" jdbcType="VARCHAR" property="password"></result>
   </resultMap>
   <sql id="entityColumnList" >
-     ID,NAME,EMAIL,USER_NAME,PHONE,IS_DELETED,ROW_VERSION,CREATION_TIME,LAST_UPDATE_TIME
+     ID,`NAME`,EMAIL,USER_NAME,PHONE,IS_DELETED,ROW_VERSION,CREATION_TIME,LAST_UPDATE_TIME
   </sql>
 
   <insert id="insert" >
-    INSERT INTO `USER` (
+    INSERT INTO `user` (
     ID,
     NAME,
     PASSWORD,
@@ -39,7 +39,7 @@
   <select id="find" resultMap="baseResultMap">
     SELECT
     <include refid="entityColumnList" />
-    FROM `USER`
+    FROM `user`
     WHERE
     IS_DELETED = 0
     <if test="request.id!=null">
@@ -51,7 +51,7 @@
   <select id="loginByUserName" resultMap="baseResultMap">
     SELECT
     <include refid="entityColumnList" />
-    FROM `USER`
+    FROM `user`
     WHERE
     IS_DELETED = 0
     <if test="request.userName!=null">
@@ -62,7 +62,7 @@
     </if>
   </select>
   <select id="isExistUser" resultType="java.lang.Long">
-    SELECT COUNT(*) FROM `USER`
+    SELECT COUNT(*) FROM `user`
     WHERE
     IS_DELETED = 0
     AND (USER_NAME = #{request.userName} OR PHONE = #{request.phone})
@@ -70,7 +70,7 @@
   </select>
   <update id="delete">
     UPDATE
-    `USER`
+    `user`
     SET
     `IS_DELETED` = 1
     ,`LAST_UPDATED_BY`=#{ request.userId }
@@ -83,7 +83,7 @@
   <select id="findByTelephone" resultMap="baseResultMap">
     SELECT
     <include refid="entityColumnList" />
-    FROM `USER`
+    FROM `user`
     WHERE
     IS_DELETED = 0
     <if test="request.phone!=null">

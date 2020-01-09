@@ -1,6 +1,5 @@
 package com.zzb.water.shop.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.zzb.water.shop.common.context.PromptMessage;
 import com.zzb.water.shop.common.utils.IdUtils;
@@ -28,15 +27,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author zzb
+ * @author 张志斌
  * 用户服务
  */
-@Service(version = "${demo.service.version}")
+@Service
 @Transactional(rollbackFor = Exception.class)
 public class UserServiceImpl implements UserService {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);

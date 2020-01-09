@@ -1,6 +1,5 @@
 package com.zzb.water.shop.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.zzb.water.shop.common.utils.IdUtils;
 import com.zzb.water.shop.config.constant.RedisKeyConstant;
@@ -11,6 +10,7 @@ import com.zzb.water.shop.service.GarbageService;
 import com.zzb.water.shop.utils.RedisClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -21,7 +21,7 @@ import java.util.List;
  * @Author by 张志斌 .
  * @Date 14:45 2019/7/6
  */
-@Service(version = "${demo.service.version}")
+@Service
 @Transactional(rollbackFor = Exception.class)
 public class GarbageServiceImpl implements GarbageService {
     @Autowired
