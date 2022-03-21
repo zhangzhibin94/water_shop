@@ -20,7 +20,7 @@
         <nacos.starter>0.2.1</nacos.starter>
         <nacos.client>1.0.0</nacos.client>
         <dubbo.register>0.0.1</dubbo.register>
-        <dubbo>2.6.5</dubbo>
+        <dubbo>2.6.9</dubbo>
         <alibaba.spring>1.0.2</alibaba.spring>
     </properties>
 
